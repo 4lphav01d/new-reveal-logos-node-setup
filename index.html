@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Running a Logos Node — Workshop</title>
+  <link rel="icon" type="image/png" href="https://cdn.sanity.io/images/pnco77xg/production/73b552d7c43105e33964aa8fa93a117868485aa9-32x32.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-primary: #050510;
+      --bg-secondary: #0a0a18;
+      --bg-card: #111128;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-purple: #a855f7;
+      --accent-orange: #f59e0b;
+      --accent-gradient: linear-gradient(135deg, #a855f7, #f59e0b);
+      --border-color: #1e1e3a;
+      --code-bg: #0d0d20;
+      --table-header-bg: #151530;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .reveal {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .reveal .slides section {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 2.5em 3em;
+      font-size: 1.6em;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .reveal .slides section.title-slide {
+      background: var(--bg-primary);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .reveal .slides section.title-slide .logos-mark {
+      margin-bottom: 1em;
+      opacity: 0.7;
+    }
+
+    .reveal .slides section.title-slide .logos-mark svg {
+      width: 60px;
+      height: 78px;
+    }
+
+    .reveal .slides section.title-slide h1 {
+      font-size: 2.8em;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.2em;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal .slides section.title-slide .subtitle {
+      font-size: 1em;
+      color: var(--text-secondary);
+      font-weight: 300;
+      margin-bottom: 1em;
+    }
+
+    .reveal .slides section.title-slide .tags {
+      display: flex;
+      gap: 0.6em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .reveal .slides section.title-slide .tags span {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.3em 0.8em;
+      border-radius: 2em;
+      font-size: 0.5em;
+      font-weight: 500;
+      color: var(--accent-orange);
+    }
+
+    .reveal .slides section.title-slide .nav-hint {
+      margin-top: 2em;
+      font-size: 0.45em;
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    .reveal h1 {
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 0.4em;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal h2 {
+      font-size: 1.4em;
+      font-weight: 600;
+      color: var(--accent-purple);
+      margin-bottom: 0.4em;
+    }
+
+    .reveal h3 {
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.3em;
+      margin-top: 0.6em;
+    }
+
+    .reveal p { margin-bottom: 0.5em; line-height: 1.5; color: var(--text-secondary); }
+    .reveal strong { color: var(--text-primary); font-weight: 600; }
+
+    .reveal ul, .reveal ol { margin-left: 1.2em; margin-bottom: 0.5em; }
+    .reveal li { margin-bottom: 0.25em; line-height: 1.5; color: var(--text-secondary); }
+
+    .reveal blockquote {
+      border-left: 3px solid var(--accent-purple);
+      padding: 0.5em 0.8em;
+      margin: 0.5em 0;
+      background: var(--bg-card);
+      border-radius: 0 0.4em 0.4em 0;
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      font-style: italic;
+      width: 100%;
+    }
+
+    .reveal blockquote strong { color: var(--text-primary); }
+
+    .reveal table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.65em;
+      margin: 0.5em 0;
+    }
+
+    .reveal th {
+      background: var(--table-header-bg);
+      color: var(--accent-purple);
+      font-weight: 600;
+      padding: 0.5em 0.6em;
+      text-align: left;
+      border-bottom: 2px solid var(--accent-purple);
+    }
+
+    .reveal td {
+      padding: 0.4em 0.6em;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .reveal tr:last-child td { border-bottom: none; }
+
+    .reveal code {
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 0.3em;
+      font-size: 0.75em;
+      color: var(--accent-orange);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .reveal pre code {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5em;
+      padding: 0.6em 0.8em;
+      font-size: 0.55em;
+      line-height: 1.5;
+      overflow-x: auto;
+      max-height: none;
+      color: var(--text-secondary);
+    }
+
+    .reveal .hljs { background: var(--code-bg); }
+    .reveal .hljs-string { color: #a78bfa; }
+    .reveal .hljs-number { color: #f59e0b; }
+    .reveal .hljs-keyword { color: #c084fc; }
+    .reveal .hljs-comment { color: #52525b; }
+
+    .reveal .slide-number {
+      bottom: 0.5em !important;
+      right: 0.8em !important;
+      font-size: 0.4em !important;
+      color: var(--text-secondary) !important;
+      opacity: 0.4;
+    }
+
+    .emoji-row {
+      display: flex;
+      gap: 1em;
+      margin: 0.5em 0;
+      flex-wrap: wrap;
+    }
+
+    .emoji-card {
+      flex: 1;
+      min-width: 8em;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 0.6em;
+      padding: 0.6em 0.8em;
+    }
+
+    .emoji-card .label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.7em;
+      display: block;
+      margin-bottom: 0.2em;
+    }
+
+    .emoji-card .desc {
+      font-size: 0.55em;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .method-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3em;
+      margin: 0.4em 0;
+    }
+
+    .method-item {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-purple);
+      padding: 0.4em 0.7em;
+      border-radius: 0 0.4em 0.4em 0;
+      font-size: 0.65em;
+      color: var(--text-secondary);
+    }
+
+    .method-item strong { color: var(--text-primary); }
+
+    .summary-table td:first-child { font-weight: 600; color: var(--accent-purple); }
+
+    .resource-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      margin: 0.5em 0;
+    }
+
+    .resource-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5em;
+      padding: 0.4em 0.7em;
+      font-size: 0.6em;
+    }
+
+    .resource-item .emoji { margin-right: 0.3em; }
+    .resource-item .title { font-weight: 600; color: var(--text-primary); display: block; }
+    .resource-item .url { color: var(--accent-orange); font-size: 0.9em; }
+
+    .warn {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 0.5em;
+      padding: 0.4em 0.7em;
+      font-size: 0.6em;
+      color: var(--accent-orange);
+      margin: 0.4em 0;
+    }
+
+    .steps {
+      font-size: 0.65em;
+    }
+
+    .steps li { margin-bottom: 0.2em; }
+
+    .two-col {
+      display: flex;
+      gap: 1em;
+    }
+
+    .two-col > div { flex: 1; }
+
+    @media (max-width: 1200px) {
+      .reveal .slides section { font-size: 1.3em; padding: 2em; }
+    }
+
+    @media (max-width: 900px) {
+      .reveal .slides section { font-size: 1em; padding: 1.5em; }
+      .emoji-row { flex-direction: column; }
+      .two-col { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section class="title-slide" data-state="title-slide">
+        <div class="logos-mark">
+          <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.6386 26C13.728 26 12.945 25.7854 12.2881 25.3549C11.6312 24.9244 11.1344 24.2467 10.7962 23.3233C10.5841 22.7003 10.4359 21.9368 10.3513 21.0328C10.2668 20.1302 10.2134 19.1833 10.1926 18.1948C10.1718 17.1842 10.1497 16.2061 10.1289 15.2592C10.1289 15.0017 10.0651 14.8716 9.93897 14.8716C9.83361 14.8716 9.72695 14.9575 9.62159 15.1292C9.21967 15.8822 8.74359 16.742 8.19208 17.7097C7.66268 18.6773 7.13328 19.645 6.60388 20.6127C6.07447 21.5804 5.5984 22.4518 5.17436 23.2257C4.77243 23.9788 4.48627 24.5264 4.31717 24.871C4.10515 25.3445 3.76696 25.6449 3.3013 25.7737C2.85644 25.9246 2.29582 25.9571 1.61814 25.8699C0.940452 25.7841 0.464381 25.5149 0.188624 25.0635C-0.107945 24.5901 -0.0546142 24.0958 0.347315 23.5795C0.623072 23.2348 1.01459 22.7198 1.52188 22.0317C2.03047 21.3216 2.6015 20.5269 3.23626 19.645C3.87102 18.7424 4.51749 17.8176 5.17306 16.8707C5.85075 15.9031 6.48551 14.9783 7.07865 14.0964C7.67178 13.1938 8.16867 12.4082 8.5706 11.7423C8.99464 11.0542 9.26909 10.5483 9.39657 10.2257C9.52404 9.92526 9.66062 9.591 9.8089 9.22551C9.95719 8.86003 10.0313 8.48414 10.0313 8.09655C10.0313 6.67754 9.89345 5.61231 9.61899 4.90345C9.36535 4.17249 9.01545 3.68864 8.5706 3.45193C8.14655 3.1944 7.68089 3.06433 7.1736 3.06433C6.79248 3.06433 6.38015 3.13977 5.9353 3.29065C5.51125 3.44152 5.2368 3.58069 5.10933 3.70945C4.87649 3.94617 4.65407 3.98909 4.44205 3.83822C4.23002 3.68734 4.16629 3.44022 4.25214 3.09685C4.48497 2.30085 4.90901 1.592 5.52296 0.967684C6.13951 0.322561 6.9967 0 8.09713 0C9.26129 0 10.1822 0.332967 10.8599 1.0002C11.5376 1.66743 12.0241 2.73137 12.3206 4.1933C12.6172 5.65523 12.7655 7.5906 12.7655 9.9994C12.7655 12.8374 12.8084 15.1071 12.893 16.8057C12.9775 18.5044 13.1154 19.7842 13.3053 20.6439C13.4952 21.4828 13.7606 22.0421 14.0987 22.3218C14.459 22.6014 14.9026 22.7406 15.432 22.7406C15.9614 22.7406 16.4167 22.6326 16.8615 22.418C17.3272 22.2034 17.7291 21.9238 18.0686 21.5791C18.2169 21.4074 18.386 21.3424 18.5772 21.3853C18.7671 21.4282 18.9154 21.5466 19.022 21.7404C19.1495 21.9121 19.1495 22.1384 19.022 22.418C18.5772 23.4078 17.9841 24.2571 17.2439 24.966C16.5246 25.654 15.6557 25.9987 14.6399 25.9987L14.6386 26Z" fill="#9EA5A0"/>
+          </svg>
+        </div>
+        <h1>Running a Logos Node</h1>
+        <p class="subtitle">A step-by-step guide for everyone</p>
+        <div class="tags">
+          <span>Platform-aware</span>
+          <span>Beginner-friendly</span>
+          <span>No Docker knowledge needed</span>
+        </div>
+        <p class="nav-hint">Press Space or → to begin</p>
+      </section>
+
+      <section>
+        <h2>What is Logos?</h2>
+        <p>Logos is a grassroots movement building <strong>decentralized public infrastructure</strong> for communities that want sovereignty over their digital lives.</p>
+        <div class="emoji-row">
+          <div class="emoji-card">
+            <span class="label">🗣️ Logos Delivery</span>
+            <span class="desc">Messaging layer — private peer-to-peer communication that resists surveillance and censorship. Binary: <strong>wakunode2</strong>.</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">📦 Codex</span>
+            <span class="desc">Storage layer — secure decentralized storage enabling fully decentralized apps and file sharing.</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">⛓️ Nomos</span>
+            <span class="desc">Consensus layer — advanced privacy for a new era of decentralized applications and social institutions.</span>
+          </div>
+        </div>
+        <blockquote>"Logos provides the tech stack for communities to run their own infrastructure — no permission needed."</blockquote>
+      </section>
+
+      <section>
+        <h2>What kind of node can you run?</h2>
+        <p>Three main node types, each serving a different purpose:</p>
+        <div class="emoji-row">
+          <div class="emoji-card">
+            <span class="label">🖥️ Logos Basecamp</span>
+            <span class="desc">A desktop app (GUI) that bundles everything — messaging, storage, wallet, and blockchain. <strong>Easiest to start with.</strong> Available as DMG (macOS) or AppImage (Linux).</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">💬 Logos Delivery — Messaging Node</span>
+            <span class="desc">A lightweight node for the Waku messaging layer. Runs relay, store, and filter protocols. Available via <strong>Docker Compose</strong>, <strong>prebuilt binary</strong>, or <strong>source build</strong>. Works on Linux, macOS, and (experimentally) Windows.</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">⛓️ Logos Blockchain Node</span>
+            <span class="desc">A headless CLI node that participates in consensus and staking on the Logos testnet. <strong>Linux only</strong> (x86_64 or Raspberry Pi 5). Available as a prebuilt binary.</span>
+          </div>
+        </div>
+        <p>Choose the one that fits your platform and interest!</p>
+      </section>
+
+      <section>
+        <h2>Platform Comparison</h2>
+        <p>Which node works on your machine?</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Node Type</th>
+              <th>Linux</th>
+              <th>macOS</th>
+              <th>Windows</th>
+              <th>Easiest Method</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Basecamp</strong></td>
+              <td>✅ AppImage</td>
+              <td>✅ DMG</td>
+              <td>❌</td>
+              <td>Download binary</td>
+            </tr>
+            <tr>
+              <td><strong>Logos Delivery</strong></td>
+              <td>✅</td>
+              <td>✅</td>
+              <td>⚠️ Experimental</td>
+              <td>Docker Compose</td>
+            </tr>
+            <tr>
+              <td><strong>Blockchain</strong></td>
+              <td>✅</td>
+              <td>❌</td>
+              <td>❌</td>
+              <td>Binary download</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>Prerequisites common to all</h3>
+        <ul>
+          <li>Stable internet connection</li>
+          <li>2–4 GB RAM (varies by node type)</li>
+          <li>Terminal / command line comfort</li>
+        </ul>
+        <h3>Special requirements</h3>
+        <ul>
+          <li><strong>Blockchain node:</strong> Linux, 64 GB+ storage</li>
+          <li><strong>Logos Delivery:</strong> Linea Sepolia RPC URL (free)</li>
+          <li><strong>Basecamp:</strong> Qt6 (bundled in binary)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Four ways to run a Logos node</h2>
+        <p>Pick the method that matches your comfort level:</p>
+        <div class="method-grid">
+          <div class="method-item"><strong>1. Desktop App (Basecamp)</strong> — GUI application — download, open, done. Best for beginners. macOS &amp; Linux.</div>
+          <div class="method-item"><strong>2. Docker Compose</strong> — One command to run a messaging node. Best for Linux/macOS. No Docker expertise needed — every command is explained.</div>
+          <div class="method-item"><strong>3. Prebuilt Binary</strong> — Download and run a compiled executable. Works for Logos Delivery (Linux/macOS) and Blockchain node (Linux).</div>
+          <div class="method-item"><strong>4. Build from Source</strong> — For developers who want to compile from the git repo. Requires Rust, CMake, etc.</div>
+        </div>
+        <p>Methods 1, 2, and 3 are covered in detail.</p>
+      </section>
+
+      <section>
+        <h2>Wait — what is Docker?</h2>
+        <p>A quick explainer before we use it:</p>
+        <div class="emoji-row">
+          <div class="emoji-card">
+            <span class="label">🐳 Docker</span>
+            <span class="desc">Packages software into <strong>containers</strong> — like a lightweight virtual machine that has everything the software needs to run.<br>✅ No need to install dependencies manually<br>✅ Works the same on every OS<br>✅ Easy to start / stop / remove</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">📦 Docker Compose</span>
+            <span class="desc">A helper that runs multiple containers together with a single command. For Logos Delivery, it sets up: the node itself, a Grafana dashboard, and a PostgreSQL database.</span>
+          </div>
+        </div>
+        <blockquote>Think of Docker Compose like a "one-click launch" for a whole system.</blockquote>
+      </section>
+
+      <section>
+        <h2>Method 1: Logos Basecamp</h2>
+        <p>The easiest way to run a Logos node — a desktop application with a graphical interface. Available for <strong>macOS</strong> (DMG) and <strong>Linux</strong> (AppImage).</p>
+        <h3>Basecamp — Step by Step</h3>
+        <div class="steps">
+          <ol>
+            <li><strong>Go to the releases page:</strong><br>
+              <code>https://github.com/logos-co/logos-basecamp/releases/latest</code></li>
+            <li><strong>Download the right file for your OS:</strong><br>
+              - <strong>macOS:</strong> <code>logos-basecamp-*.dmg</code><br>
+              - <strong>Linux:</strong> <code>logos-basecamp-*.AppImage</code></li>
+            <li><strong>Run the downloaded file:</strong><br>
+              - <strong>macOS:</strong> Open the <code>.dmg</code> and drag to Applications<br>
+              - <strong>Linux:</strong> Make executable and run:
+              <pre><code>chmod +x logos-basecamp-*.AppImage
+./logos-basecamp-*.AppImage</code></pre>
+            </li>
+          </ol>
+        </div>
+        <p>💡 Basecamp bundles blockchain, storage, messaging, and wallet in one app.</p>
+      </section>
+
+      <section>
+        <h2>Method 2: Logos Delivery via Docker Compose</h2>
+        <p>A messaging node (<strong>Waku</strong> protocol) using Docker Compose. Works on <strong>Linux</strong>, <strong>macOS</strong>, and <strong>Windows</strong> (experimental).</p>
+        <h3>Prerequisite: Install Docker</h3>
+        <p><strong>Linux</strong></p>
+        <pre><code>curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+        <p><strong>macOS</strong><br>
+        Download <strong>Docker Desktop</strong> from <code>docker.com/products/docker-desktop</code> and install it like any Mac app.</p>
+        <p><strong>Windows</strong><br>
+        Install <strong>WSL2</strong> from <code>aka.ms/wsl2</code>, then install <strong>Docker Desktop</strong>.</p>
+        <p>Verify with: <code>docker --version</code> and <code>docker compose version</code></p>
+      </section>
+
+      <section>
+        <h2>Method 2: Logos Delivery — Step by Step</h2>
+        <ol>
+          <li><strong>Clone the compose repository:</strong>
+            <pre><code>git clone https://github.com/waku-org/nwaku-compose
+cd nwaku-compose</code></pre>
+            The repo is still called <code>nwaku-compose</code> — this is correct.</li>
+          <li><strong>Copy the example environment file:</strong>
+            <pre><code>cp .env.example .env</code></pre></li>
+          <li><strong>Edit the <code>.env</code> file</strong> — set your RPC endpoint:
+            <pre><code>RLN_RELAY_ETH_CLIENT_ADDRESS=https://linea-sepolia.infura.io/v3/YOUR_KEY</code></pre>
+            Get a free Infura key at <code>infura.io</code> (Linea Sepolia)</li>
+          <li><strong>Start the node:</strong>
+            <pre><code>docker compose up -d</code></pre>
+            The <code>-d</code> flag runs it in the background.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Method 2: Verify &amp; Dashboard</h2>
+        <ul>
+          <li><strong>📊 Open the Grafana dashboard:</strong> Visit <code>http://localhost:3000</code> in your browser. Default login: <strong>admin</strong> / <strong>admin</strong></li>
+          <li><strong>🔌 Check the REST API:</strong> <code>curl http://localhost:8645/debug/v1/info | jq .</code></li>
+          <li><strong>🛑 Stop the node:</strong> <code>docker compose down</code></li>
+        </ul>
+        <div class="emoji-row">
+          <div class="emoji-card">
+            <span class="label">📊 Grafana</span>
+            <span class="desc">Visual dashboard at localhost:3000</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">🔌 REST API</span>
+            <span class="desc">Check node status at port 8645</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">🛑 Control</span>
+            <span class="desc"><code>docker compose down</code> to stop</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Method 3: Logos Delivery via Prebuilt Binary</h2>
+        <p>No Docker required — download and run directly on your system. Works on <strong>Linux</strong> (x86_64) and <strong>macOS</strong> (ARM64/Intel). Windows support is experimental.</p>
+        <h3>Step by Step</h3>
+        <div class="steps">
+          <ol>
+            <li><strong>Go to the releases page:</strong><br>
+              <code>https://github.com/waku-org/nwaku/releases</code> — pick the latest stable version (e.g. v0.38.1).</li>
+            <li><strong>Download the archive for your platform:</strong>
+              <pre><code># Linux x86_64:
+wget https://github.com/waku-org/nwaku/releases/download/\
+v0.38.1/nwaku-linux-x86_64-v0.38.1.tar.gz
+
+# macOS ARM64 (Apple Silicon):
+wget https://github.com/waku-org/nwaku/releases/download/\
+v0.38.1/nwaku-darwin-arm64-v0.38.1.tar.gz</code></pre>
+            </li>
+            <li><strong>Extract and run:</strong>
+              <pre><code>tar -xzf nwaku-*-v0.38.1.tar.gz
+cd build/
+./wakunode2 --dns-discovery=true \
+  --dns-discovery-url=enrtree://AIRVQ5DDA4FFWLRBCHJWUWOO6X6S4ZTZ5B667LQ6AJU6PEYDLRD5O@sandbox.waku.nodes.status.im \
+  --discv5-discovery=true</code></pre>
+            </li>
+          </ol>
+        </div>
+        <p>💡 Use <code>./wakunode2 --help</code> to see all options.</p>
+      </section>
+
+      <section>
+        <h2>Method 4: Blockchain Node (Binary)</h2>
+        <p>Run a full consensus node on the Logos testnet.</p>
+        <div class="warn">⚠️ <strong>Linux only</strong> (x86_64 or Raspberry Pi 5). Requires <strong>64 GB+ storage</strong> and <strong>glibc 2.39+</strong>.</div>
+        <h3>Step by Step</h3>
+        <div class="steps">
+          <ol>
+            <li><strong>Download the node binary and ZK circuits:</strong>
+              <pre><code>wget https://github.com/logos-blockchain/logos-blockchain/\
+releases/download/0.1.2/\
+logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz
+
+wget https://github.com/logos-blockchain/logos-blockchain/\
+releases/download/0.1.2/\
+logos-blockchain-node-linux-x86_64-0.1.2.tar.gz</code></pre>
+            </li>
+            <li><strong>Extract both archives:</strong>
+              <pre><code>tar -xf logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz
+tar -xf logos-blockchain-node-linux-x86_64-0.1.2.tar.gz</code></pre>
+            </li>
+            <li><strong>Move circuits to default location:</strong>
+              <pre><code>mv logos-blockchain-circuits-v0.4.2/ ~/.logos-blockchain-circuits</code></pre>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section>
+        <h2>Blockchain Node — Run &amp; Verify</h2>
+        <ol start="4">
+          <li><strong>Generate config with bootstrap peers:</strong>
+            <pre><code>./logos-blockchain-node init \
+  -p /ip4/65.109.51.37/udp/3000/quic-v1 \
+  -p /ip4/65.109.51.37/udp/3001/quic-v1 \
+  -p /ip4/65.109.51.37/udp/3002/quic-v1 \
+  -p /ip4/65.109.51.37/udp/3003/quic-v1</code></pre>
+            Add <code>--no-public-ip-check</code> if behind NAT/CGNAT.</li>
+          <li><strong>Start the node:</strong>
+            <pre><code>./logos-blockchain-node user_config.yaml</code></pre></li>
+          <li><strong>Check status:</strong>
+            <pre><code>curl -s http://localhost:8080/cryptarchia/info | jq .
+curl -s http://localhost:8080/network/info | jq .</code></pre>
+            Look for mode "Bootstrapping" → "Online". Bootstrap takes 12–24 hours.</li>
+        </ol>
+        <h3>Get Testnet Tokens</h3>
+        <pre><code>grep -A3 known_keys user_config.yaml</code></pre>
+        <p>Visit <code>https://testnet.blockchain.logos.co/web/faucet/</code> and enter a hex value from <code>known_keys</code>. Wait ~3.5 hours for tokens to be eligible for staking.</p>
+      </section>
+
+      <section>
+        <h2>Tips &amp; Troubleshooting</h2>
+        <div class="emoji-row">
+          <div class="emoji-card">
+            <span class="label">🔒 Port forwarding</span>
+            <span class="desc">Ensure these ports are open: <strong>3000–3003</strong> UDP (blockchain), <strong>60000</strong> TCP, <strong>9000</strong> UDP (messaging), <strong>8080</strong> TCP (API).</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">🐌 Slow sync</span>
+            <span class="desc">Blockchain bootstrap takes 12–24 hours. Leave the node running overnight.</span>
+          </div>
+          <div class="emoji-card">
+            <span class="label">🔄 Docker issues</span>
+            <span class="desc">Run <code>docker compose logs</code> to see errors. Ensure ports aren't in use (<code>lsof -i :8645</code>).</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>You have 3 solid options to run a Logos node:</p>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Method</th>
+              <th>Best for</th>
+              <th>Effort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Basecamp</strong></td>
+              <td>Desktop GUI, all-in-one</td>
+              <td>⭐⭐ (Easy)</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Logos Delivery (Docker)</strong></td>
+              <td>Messaging node, any OS</td>
+              <td>⭐⭐⭐ (Medium)</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Logos Delivery (Binary)</strong></td>
+              <td>No Docker, lightweight</td>
+              <td>⭐⭐⭐ (Medium)</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Blockchain node</strong></td>
+              <td>Linux, consensus/staking</td>
+              <td>⭐⭐⭐⭐ (Advanced)</td>
+            </tr>
+          </tbody>
+        </table>
+        <blockquote>Start with <strong>Basecamp</strong> for the fastest path to seeing Logos in action. Use <strong>Logos Delivery</strong> to contribute to the messaging layer. Use the <strong>blockchain node</strong> on Linux for consensus participation.</blockquote>
+        <p>🎉 You're now ready to run a Logos node!</p>
+      </section>
+
+      <section class="title-slide" data-state="title-slide">
+        <h2>Need Help?</h2>
+        <p>Resources to get you unstuck:</p>
+        <div class="resource-list">
+          <div class="resource-item">
+            <span class="emoji">📚</span>
+            <span class="title">Documentation</span>
+            <span class="url">docs.logos.co</span>
+          </div>
+          <div class="resource-item">
+            <span class="emoji">🔧</span>
+            <span class="title">Builder Hub</span>
+            <span class="url">build.logos.co</span>
+          </div>
+          <div class="resource-item">
+            <span class="emoji">💬</span>
+            <span class="title">Discord</span>
+            <span class="url">discord.com/invite/logosnetwork</span>
+          </div>
+          <div class="resource-item">
+            <span class="emoji">🐙</span>
+            <span class="title">GitHub</span>
+            <span class="url">github.com/logos-co</span>
+          </div>
+          <div class="resource-item">
+            <span class="emoji">📅</span>
+            <span class="title">Office Hours</span>
+            <span class="url">Every Friday 12:00 UTC</span>
+          </div>
+          <div class="resource-item">
+            <span class="emoji">🌐</span>
+            <span class="title">Community Forum</span>
+            <span class="url">forum.logos.co</span>
+          </div>
+        </div>
+        <blockquote>The Logos community is here to help. Don't hesitate to ask!</blockquote>
+      </section>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+  <script>
+    Reveal.initialize({
+      transition: 'fade',
+      slideNumber: 'c/t',
+      hash: true,
+      controls: false,
+      progress: true,
+      history: true,
+      keyboard: true,
+      touch: true,
+      plugins: [ RevealHighlight ]
+    });
+  </script>
+</body>
+</html>
